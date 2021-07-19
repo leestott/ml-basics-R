@@ -1,6 +1,9 @@
 # Train and Evaluate Regression Models using Tidymodels
 
-
+## Install Prerequisties
+```{r eval=False, include=FALSE}
+install.packages(c('knitr','rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))
+```
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(tidymodels)
@@ -9,6 +12,7 @@ library(lubridate)
 library(kableExtra)
 library(patchwork)
 library(scales)
+library(knitr)
 library(summarytools)
 library(plotly)
 library(glmnet)
@@ -52,8 +56,6 @@ You can skip this tutorial if you've already done these things.
 
 We'll require some packages to knock-off this module. You can have them installed as:
 
-`install.packages(c('tidyverse', 'tidymodels', 'glmnet', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))`
-
 Alternatively, feel free to follow along this interactive tutorial by running the code chunks right from your browser.
 
 The `Python` edition of the learning path can be found at [this learning path](https://docs.microsoft.com/en-us/learn/paths/create-machine-learn-models/).
@@ -64,6 +66,10 @@ The `Python` edition of the learning path can be found at [this learning path](h
 
 Now, let's get started!
 
+## Need to look at how you can render image inline
+```{r, echo = TRUE, out.width="30%"}
+knitr::include_graphics(images/encouRage.jpg)
+```
 ![Artwork by \@allison_horst](images/encouRage.jpg){width="630"}
 
 ## An introduction to regression ​👨‍🏫​✍️​👩‍🏫​
@@ -100,7 +106,7 @@ In this module, we'll focus on ***`regression`**.*
 
 For example, a company that rents bicycles might want to predict the expected number of rentals in a given day, based on the season, day of the week, weather conditions, and so on.
 
-![](images/cycle-rentals.png){width="500"}
+![](\images\cycle-rentals.png){width="500"}
 
 <br> **Training and evaluating a regression model ⚙️**
 
