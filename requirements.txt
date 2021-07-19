@@ -15,9 +15,10 @@ library(randomForest) # Implementing random forest models
 library(xgboost) # Implementing boosted trees models
 library(conflicted) # Resolving ambiguous function names
 library(here) # A simpler way to find your files
+library(paletteer) # Cool color palettes
 
 
 
 One can have them installed as:
 
-install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))
+install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))
