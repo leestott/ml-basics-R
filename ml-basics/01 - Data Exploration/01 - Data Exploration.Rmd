@@ -5,8 +5,10 @@
 install.packages(c('tidyverse', 'patchwork', 'paletteer', 'statip', 'summarytools'))
 ```
 
-
-
+##install prerequisties 
+```{r eval=False, include=FALSE}
+install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))
+```
 
 ```{r setup, include=FALSE}
 library(tidyverse)
