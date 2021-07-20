@@ -3,11 +3,11 @@ The following R packages will be required in this module:
 library(rmarkdown) # Knits code and text
 library(tidyverse) # Collection of R packages designed for data science
 library(tidymodels) # Collection of packages for modelling and machine learning
-library(glue) # Formatting strings
+library(glue)0 # Formatting strings
 library(lubridate) # Parsing and manipulating dates
 library(kableExtra) # Generating tables in R
 library(patchwork) # Combines multiple plots
-library(scales) # Implementing scaling functions
+library(scales)1 # Implementing scaling functions
 library(summarytools) # Neatly summarizes numerical and categorical data
 library(plotly) # Implementing interactive plots
 library(glmnet) # Implementing generalized linear models
@@ -21,4 +21,4 @@ library(paletteer) # Cool color palettes
 
 One can have them installed as:
 
-install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))
+install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'summarytools', 'kableExtra', 'here'))

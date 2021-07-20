@@ -1,6 +1,12 @@
 # Train and Evaluate Regression Models using Tidymodels
 
 
+```{r eval=FALSE, include=FALSE}
+install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'summarytools', 'kableExtra', 'here'))
+```
+
+
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(tidymodels)
@@ -1338,7 +1344,7 @@ Now, we can save this model to be used later.
 ```{r s_last_fit_wf, exercise = F, exercise.eval = F,message=F,warning=F}
 # Save trained workflow
 saveRDS(bike_boost_model, 'bike_boost_model.rds')
-beepr::beep(9)
+# beepr::beep(9)
 ```
 
 Now, we can load it whenever we need it, and use it to predict labels for new data. This is often called *`scoring`* or *`inferencing`*.

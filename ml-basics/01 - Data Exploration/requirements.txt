@@ -1,0 +1,17 @@
+The following R packages will be required in this module:
+
+library(rmarkdown) # Knits code and text
+library(tidyverse) # Collection of R packages designed for data science
+library(glue) # Formatting strings
+library(kableExtra) # Generating tables in R
+library(patchwork) # Combines multiple plots
+library(scales) # Implementing scaling functions
+library(summarytools) # Neatly summarizes numerical and categorical data
+library(paletteer) # Cool color palettes
+library(statip) # Provides statistical functions such as Mode
+
+
+
+One can have them installed as:
+
+install.packages(c('rmarkdown', tidyverse', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra'))
