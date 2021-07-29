@@ -1,13 +1,5 @@
 # Explore and analyze data with R
 
-
-```{r eval=FALSE, include=FALSE}
-install.packages(c('tidyverse', 'patchwork', 'paletteer', 'statip', 'summarytools'))
-```
-
-
-
-
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(glue)
@@ -19,13 +11,13 @@ library(summarytools)
 
 ## Buckle up 👨‍🚀
 
-In this learning path, we'll learn how to create Machine learning models using `R` 😊. Machine learning is the foundation for predictive modeling and artificial intelligence.We'll learn the core principles of machine learning and how to use common tools and frameworks to train, evaluate, and use machine learning models.
+In this learning path, we'll learn how to create Machine learning models using `R` 😊. Machine learning is the foundation for predictive modeling and artificial intelligence. We'll learn the core principles of machine learning and how to use common tools and frameworks to train, evaluate, and use machine learning models.
 
 Modules that will be covered in this learning path include:
 
 -   Explore and analyze data with R
 
--   *Train and evaluate regression models (under development)*
+-   Train and evaluate regression models
 
 -   *Train and evaluate classification models (under development)*
 
@@ -36,20 +28,6 @@ Modules that will be covered in this learning path include:
 ### **Prerequisites**
 
 This learning path assumes knowledge of basic mathematical concepts. Some experience with `R and the tidyverse` is also beneficial though we'll try as much as possible to skim through the core concepts. To get started with R and the tidyverse , the best place to start would be [R for Data Science](http://r4ds.had.co.nz/) an O'Reilly book written by Hadley Wickham and Garrett Grolemund. It's designed to take you from knowing nothing about R or the tidyverse to having all the basic tools of data science at your fingertips.
-
-This [tutorial](https://learnr-examples.shinyapps.io/ex-setup-r/#section-welcome) will help you set up your computer to use R. It is for you if you need to:
-
--   Install R on your computer
-
--   Install the RStudio IDE
-
--   Install the `tidyverse` R package
-
-You can skip this tutorial if you've already done these things.
-
-We'll require some packages to knock-off this module. You can have them installed as:
-
-`install.packages(c('tidyverse', 'patchwork', 'paletteer', 'statip', 'summarytools'))`
 
 The `Python` edition of the learning path can be found at [this learning path](https://docs.microsoft.com/en-us/learn/paths/create-machine-learn-models/).
 
@@ -91,6 +69,18 @@ Data scientists can use a variety of tools and techniques to explore, visualize,
 
 The best way to learn about exploring and preparing data is to try it for yourself, so that's what you'll do in this exercise.
 
+We'll require some packages to knock-off this module. You can have them installed as:
+
+`install.packages(c('tidyverse', 'patchwork', 'paletteer', 'statip', 'summarytools'))`
+
+Alternatively, the script below checks whether you have the packages required to complete this module and installs them for you in case some are missing.
+
+```{r message=F, warning=F}
+suppressWarnings(if(!require("pacman")) install.packages("pacman"))
+
+pacman::p_load(tidyverse, kableExtra, patchwork, summarytools, paletteer, statip)
+```
+
 ## 1. Getting to know R ... a little
 
 I've heard R described as quirky. But quirky is good, it means it's a little bit out of the norm. And I think that's what makes R, R. So to easen things up, we'll briefly discuss some of the most important family of data types in base R: `vectors`.
@@ -99,7 +89,7 @@ I've heard R described as quirky. But quirky is good, it means it's a little bit
 >
 > `object_name <- value`
 >
-> `=` will work in place of `<-`, but it will cause confusion later. Use the keyboard shortcut: `Alt` + `-` (the minus sign) to poof up the assignment operator, \<- , in a flash. 💫
+> `=` will work in place of `<-`, but it will cause confusion later.
 
 ### Atomic vectors
 
@@ -107,26 +97,44 @@ The basic data structure in R is the [vector](https://r4ds.had.co.nz/vectors.htm
 
 Vectors are created using use [`c()`](https://rdrr.io/r/base/c.html), short for combine. You can determine the type of a vector with [`typeof()`](https://rdrr.io/r/base/typeof.html) and how many elements it contains with [`length()`](https://rdrr.io/r/base/length.html).
 
-```{r}
+Let's create a '*logical*' vector and confirm its *type*
+
+```{r lgl_var,eval=TRUE }
 # Logical vector
 lgl_var <- c(TRUE, FALSE)
-print(lgl_var)
+
 typeof(lgl_var)
 
-# Double vector: These are special values defined by the floating point standard.
+```
+
+What about a vector of type *double*? Doubles are special values defined by the floating point standard.
+
+```{r dbl_var}
+# Double vector: 
 dbl_var <- c(1, 2.5, 4.5)
+
 print(dbl_var)
 
+```
 
-# Integer vector: written similarly to doubles but must be followed by L
+Integers are written similarly to doubles but must be followed by *L*. They are numbers without decimal points.
+
+```{r int_var}
+# Integer vector: 
 int_var <- c(1L, 6L, 10L)
-print(int_var)
-length(int_var)
+
+int_var
 
 
+```
+
+Characters are surrounded by `" "` or `' '`
+
+```{r int_char}
 # Character vector
-chr_var <- c("these are", "some strings")
+chr_var <- c("these are", "some","stranger strings")
 chr_var
+length(chr_var)
 ```
 
 Adding a `dim` attribute to a vector allows it to behave like a 2-dimensional **matrix** or a multi-dimensional **array**.
@@ -156,6 +164,7 @@ We'll start by looking at some simple data. Suppose a college takes a sample of 
 grades <-  c(50, 50, 47, 97, 49, 3, 53, 42, 26,
              74, 82, 62, 37, 15, 70, 27, 36, 35,
              48, 52, 63, 64)
+
 print(grades)
 ```
 
@@ -334,6 +343,8 @@ df_students <- tibble(
   StudyHours = study_hours,
   
   Grade = grades)
+
+# Print the data frame
 
 print(df_students)
 
@@ -532,8 +543,7 @@ mean_grade <- df_students %>%
 # Glue it all together
 glue(
   'Average weekly study hours: {format(round(mean_study, 2), nsmall = 2)}
-   Average grade: {format(round(mean_grade, 2), nsmall = 2)}'
-)
+   Average grade: {format(round(mean_grade, 2), nsmall = 2)}')
 ```
 
 Time to do some basic data wrangling with dplyr verbs
@@ -572,6 +582,7 @@ Let's go forth and mutate!
 # TRUE/FALSE column based on conditions
 df_students <- df_students %>% 
                   mutate(Pass = (Grade >= 60 ))
+
 df_students
 ```
 
@@ -709,9 +720,7 @@ bar_chart <- ggplot(data = df_students,
     panel.grid = element_blank(),
     panel.grid.major.y = element_line(color = '#95a5a6', linetype = 'dashed', size = 0.5),
     plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_text(angle = 90)
-    
-  )
+    axis.text.x = element_text(angle = 90))
 
 # Create a pie chart of pass counts
 pie_chart <- ggplot(data = count(df_students, Pass),
@@ -729,8 +738,7 @@ pie_chart <- ggplot(data = count(df_students, Pass),
     plot.title = element_text(hjust = 0.5),
     axis.line  = element_blank(),
     axis.text = element_blank(),
-    axis.ticks = element_blank()
-  )
+    axis.ticks = element_blank())
 
 
 
@@ -778,11 +786,11 @@ To understand the distribution better, we can examine so-called *measures of cen
 
 -   The *median*: The value in the middle of the range of all of the sample values.
 
--   The *mode*: The most commonly occuring value in the sample set^\*^.
+-   The *mode*: The most commonly occurring value in the sample set.
 
 Let's calculate these values, along with the minimum and maximum values for comparison, and show them on the histogram.
 
-> ^\*^Of course, in some sample sets , there may be a tie for the most common value - in which case the dataset is described as *bimodal* or even *multimodal*.
+> Of course, in some sample sets , there may be a tie for the most common value - in which case the dataset is described as *bimodal* or even *multimodal*.
 
 Base *R does not* provide a *function* for finding the *mode*. But worry not, `statip::mfv` returns the most frequent value(s) (or mode(s)) found in a vector. Other pretty awesome workarounds can be found can be found on this [stackoverflow thread](https://stackoverflow.com/questions/2547402/how-to-find-the-statistical-mode).
 
@@ -912,8 +920,7 @@ show_distribution <- function(var_data, binwidth) {
   
   # To return multiple outputs, use a `list`
   return(list(stats,
-              hist_gram / bx_plt)
-        ) # End of returned outputs
+              hist_gram / bx_plt)) # End of returned outputs
   
 } # End of function
 
@@ -1192,8 +1199,7 @@ A good example would be the [`summarytools`](https://github.com/dcomtois/summary
 library(summarytools)
 descr(
   df_students,
-  stats = "common"
-)
+  stats = "common")
 ```
 
 ## 7. Comparing data
@@ -1263,9 +1269,7 @@ ggplot(data = df_sample_long, aes(x = Name, y = Values))+
                                       linetype = 'dashed',
                                       size = 0.5),
     axis.text.x = element_text(angle = 90),
-    legend.title = element_blank()
-    
-  )
+    legend.title = element_blank())
 ```
 
 The chart shows bars for both grade and study hours for each student; but it's not easy to compare because the values are on different scales. Grades are measured in grade points, and range from 3 to 97; while study time is measured in hours and ranges from 1 to 16.
@@ -1301,9 +1305,7 @@ ggplot(data = df_normalized, aes(x = Name, y = Values))+
     axis.text.x = element_text(angle = 90),
     legend.title = element_blank(),
     legend.position = c(0.9, 0.9),
-    legend.background = element_blank()
-    
-  )
+    legend.background = element_blank())
 ```
 
 With the data normalized, it's easier to see an apparent relationship between grade and study time. It's not an exact match, but it definitely seems like students with higher grades tend to have studied more.
