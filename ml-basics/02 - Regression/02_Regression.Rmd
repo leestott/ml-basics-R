@@ -1,11 +1,6 @@
 # Train and Evaluate Regression Models using Tidymodels
 
 
-```{r eval=FALSE, include=FALSE}
-install.packages(c('rmarkdown', 'tidyverse', 'tidymodels', 'glmnet', 'plotly', 'conflicted', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'summarytools', 'kableExtra', 'here'))
-```
-
-
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -45,22 +40,6 @@ Modules that will be covered in this learning path include:
 ### **Prerequisites**
 
 This learning path assumes knowledge of basic mathematical concepts. Some experience with `R and the tidyverse` is also beneficial though we'll try as much as possible to skim through the core concepts. To get started with R and the tidyverse, the best place would be [R for Data Science](http://r4ds.had.co.nz/) an O'Reilly book written by Hadley Wickham and Garrett Grolemund. It's designed to take you from knowing nothing about R or the tidyverse to having all the basic tools of data science at your fingertips.
-
-This [tutorial](https://learnr-examples.shinyapps.io/ex-setup-r/#section-welcome) will help you set up your computer to use R. It is for you if you need to:
-
--   Install R on your computer
-
--   Install the RStudio IDE
-
--   Install the `tidyverse` R package
-
-You can skip this tutorial if you've already done these things.
-
-We'll require some packages to knock-off this module. You can have them installed as:
-
-`install.packages(c('tidyverse', 'tidymodels', 'glmnet', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'summarytools', 'kableExtra', 'here'))`
-
-Alternatively, feel free to follow along this interactive tutorial by running the code chunks right from your browser.
 
 The `Python` edition of the learning path can be found at [this learning path](https://docs.microsoft.com/en-us/learn/paths/create-machine-learn-models/).
 
@@ -122,179 +101,23 @@ To train the model, we start with a data sample containing the features as well 
 
 The use of historic data with known label values to train a model makes regression an example of *`supervised`*`machine learning`.
 
-<br> **A simple example 🚴⛅**
+The best way to learn about regression is to try it for yourself, so that's what you'll do in this exercise.
 
-Let's take a simple example to see how the training and evaluation process works in principle. Suppose we simplify the scenario so that we use a single feature, average daily temperature, to predict the bicycle rentals label.
+> We'll require some packages to knock-off this module. You can have them installed as:
+ `install.packages(c('tidyverse', 'tidymodels', 'glmnet', 'randomForest', 'xgboost', 'patchwork', 'paletteer', 'statip', 'here', 'summarytools'))`
 
-We start with some data that includes known values for the average daily temperature feature and the bicycle rentals label.
+Alternatively, the script below checks whether you have the packages required to complete this module and installs them for you in case some are missing.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Dummy set containing a feature and label column
-dummy_set <- tibble(
-  Temperature = c(56, 61, 67, 72, 76, 82, 54, 62),
-  Rentals = c(115, 126, 137, 140, 152, 156, 114, 129)
-)
+```{r}
+suppressWarnings(if(!require("pacman")) install.packages("pacman"))
 
-# Display the data set
-dummy_set %>% 
-  kbl(align = 'l') %>% 
-  kable_material_dark()
+pacman::p_load('tidyverse', 'tidymodels', 'glmnet',
+               'randomForest', 'xgboost','patchwork',
+               'paletteer', 'statip', 'here', 'devtools',
+               'doParallel', 'summarytools')
 ```
 
-<br> Now we'll take the first five of these observations and use them to train a regression model.
 
-> In reality, you'd *`randomly`* split the data into training and validation sets - it's important for the split to be random to ensure that each subset is `statistically similar`
-
-Our goal in `training` the model is to find a `function` (let's call it $f$) that we can *apply* to the temperature *`feature`* (which we'll call $x$) to *calculate* the rentals *`label`* (which we'll call $y$). In other words, we need to define the following function:
-
-$$
-f\ (x)\ =\ y
-$$
-
-Our training dataset looks like this:
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Split data into training and test sets
-dummy_train_set <- dummy_set %>% 
-  dplyr::slice(1:5)
-
-dummy_test_set <- dummy_set %>% 
-  dplyr::slice(6:8)
-
-# Display the training set
-dummy_train_set %>% 
-  rename(c(x = Temperature, y = Rentals)) %>% 
-  kbl(align = 'l') %>% 
-  kable_material_dark()
-```
-
-<br> Anytime you are planning to implement modelling, it's always a good idea to explore your dataset. Let's see this graphically ![](images/ggplot2.png){width="20"} . The plots are interactive, so feel free to hover around 😄.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Display the training set
-theme_set(theme_light())
-train_plot <- dummy_set %>%
-  dplyr::slice(1:5) %>%
-  rename(c(x = Temperature, y = Rentals)) %>%
-  ggplot(mapping = aes(x = x, y = y)) +
-  geom_point(size = 1.6, color = "blue")+
-  xlim(50, 80)+
-  ylim(80, 160)+
-  labs(x = 'x (Temperature)', y = 'y (Rentals)')
-
-ggplotly(train_plot)
-```
-
-<br> Now we need to fit these values to a function, allowing for some random variation. You can probably see that the plotted points form an almost straight diagonal line - in other words, there's an apparent *`linear`*`relationship` between $x$ and $y$, so we need to find a linear function that's the best fit for the data sample.
-
-There are various algorithms we can use to determine this function, which will ultimately find a straight line with *minimal overall variance* from the plotted points; like this:
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Display the training set
-theme_set(theme_light())
-train_plot <- dummy_set %>%
-  dplyr::slice(1:5) %>%
-  rename(c(x = Temperature, y = Rentals)) %>%
-  ggplot(mapping = aes(x = x, y = y)) +
-  geom_point(size = 1.6, color = "blue") +
-  geom_smooth(method = 'lm', se = F, fullrange = TRUE, linetype = 3, color = "black", alpha = 0.2) +
-  xlim(50, 80)+
-  ylim(80, 160)+
-  labs(x = 'x (Temperature)', y = 'y (Rentals)')
-
-ggplotly(train_plot)
-```
-
-<br> The line represents a linear function that can be used with any value of $x$ to apply the *slope* of the line and its *intercept* (where the line crosses the y axis when $x$ is 0) to calculate $y$. In this case, if we extended the line to the left we'd find that when $x$ is 0, $y$ is around 20, and the slope of the line is such that for each unit of $x$ you move along to the right, $y$ increases by around 1.7. Our $f$ function therefore can be calculated as:
-
-$$
-f(x) \ = \ 20\ +\ 1.7x
-$$
-
-Now that we've defined our`predictive function`, we can use it to `predict labels` for the `validation data` we held back and compare the predicted values (which we typically indicate with the symbol $\hat y$, or "y-hat") with the actual known $y$ values (Rentals).
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Display the test set
-dummy_test_set %>% 
-  mutate("$\\hat{y}$" =(20+1.7*Temperature)) %>%
-  kbl(align = 'l') %>% 
-  kable_material_dark()
-```
-
-<br> Let's see how the$\ y$ and $\hat y$ values compare in a plot:
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Make predictions using the linear model
-dummy_pred <- dummy_test_set %>% 
-  mutate("$\\hat{y}$" =(20+1.7*Temperature))
-colors <- c("Actual Rentals" = "blue", "Predicted Rentals" = "red")
-# Comparison plot
-dummy_pred_plot <- dummy_pred %>% 
-  ggplot() +
-  geom_point(aes(x = Temperature, y = Rentals, color = "Actual Rentals"))+
-  geom_point(aes(x = Temperature, y = `$\\hat{y}$`, color = "Predicted Rentals")) +
-  geom_smooth(aes(x = Temperature, y = `$\\hat{y}$`), method = 'lm',se = F, fullrange = TRUE, linetype = 3, color = "black", alpha = 0.2) +
-  xlim(50, 90)+
-  ylim(80, 160)+
-  labs(x = 'x (Temperature)', y = 'Rentals' )+
-  scale_color_manual(name = "",values = colors)
-
-ggplotly(dummy_pred_plot)
-  
-```
-
-<br> The plotted points that are on the function line are the `predicted` $\hat y$ values calculated by the function, and the other plotted points are the `actual` $y$ values.
-
-There are various ways we can measure the variance between the predicted and actual values, and we can use these metrics to evaluate how well the model predicts.
-
-> *Machine learning is based on statistics and math, and it's important to be aware of specific terms that statisticians and mathematicians (and therefore data scientists) use. You can think of the difference between a predicted label value and the actual label value as a measure of **`error`**. However, in practice, the "actual" values are based on sample observations (which themselves may be subject to some random variance). To make it clear that we're comparing a predicted value (*$\hat y$*) with an observed value (*$y$*) we refer to the difference between them as the **`residuals`**. We can summarize the residuals for all of the validation data predictions to calculate the overall **loss** in the model as a measure of its predictive performance.*
-
-One of the most common ways to measure the loss is to square the individual residuals, sum the squares, and calculate the mean. Squaring the residuals has the effect of basing the calculation on *absolute* values (ignoring whether the difference is negative or positive) and giving more weight to larger differences. This metric is called the ***`Mean Squared Error`***.
-
-$$MSE= \frac{1}{n}  \sum_{i=1}^{n} (y_i - \hat y_i)^2$$ In other words, the MSE is the *mean* $\frac{1}{n}\sum_{i=1}^{n}$ of the *squares of the errors* $(y_i - \hat y_i)^2$
-
-For our validation data, the calculation looks like this:
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Calculate residuals and square of residuals
-dummy_mse <- dummy_test_set %>% 
-  mutate("$\\hat{y}$" =(20+1.7*Temperature)) %>% 
-  select(-1) %>% 
-  mutate("$y - \\hat{y}$ " = (.[1] - .[2])) %>% 
-  mutate("$(y - \\hat{y})^2$ " = (.[3]^2)) %>% 
-  rename("$y$" = 1)
-
-dummy_mse %>% 
-  kbl(align = 'l') %>% 
-  kable_material_dark()
-```
-
-<br> Great! Let's go ahead and do some summary statistics on column $(y - \hat y)^2$ to obtain the total summation and the mean:
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Calculate mse
-dummy_mse %>%
-  select(4) %>% 
-  summarise("$\\sum(y - \\hat{y})^2$ " = colSums(.), "$MSE$" = round(colMeans(.), 2)) %>% 
-  kbl(align = 'l') %>% 
-  kable_material_dark()
-```
-
-<br> So the loss for our model based on the `MSE` metric is `9.79`.
-
-So is that any good? 🤷 It's difficult to tell because MSE value is not expressed in a meaningful unit of measurement.
-
-However, we do know that the `lower` the value is, the `less loss` there is in the model; and therefore, the better it is predicting. This makes it a useful metric to compare two models and find the one that performs best.
-
-Sometimes, it's more useful to express the loss in the `same unit of measurement as the predicted label value itself` - in this case, the number of rentals. It's possible to do this by calculating the `square root of the MSE`, which produces a metric known, unsurprisingly, as the ***`Root Mean Squared Error`*** (RMSE).
-
-$$RMSE = \sqrt{9.79} = 3.13 $$
-
-So our model's RMSE indicates that the loss is just over 3, which you can interpret loosely as meaning that on average, incorrect predictions are wrong by around 3 rentals.
-
-There are many other metrics that can be used to measure loss in a regression. For example, $R^2$ **`(R-Squared)`** (sometimes known as *coefficient of determination*) is the correlation between $x$ and $y$ squared. This produces a value between 0 and 1 that measures the amount of `variance that can be explained by the model`.
-
-An interior value such as $R^2 = 0.7$ may be loosely interpreted as follows: "Seventy percent of the variance in the predicted label can be explained by the predicting features. The remaining thirty percent can be attributed to unknown, [lurking variables](https://en.wikipedia.org/wiki/Lurking_variable "Lurking variable") or inherent variability." Generally, the closer the $R^2$ value is to 1, the better the model predicts.
 
 ## **Exercise - Train and evaluate a regression model:**
 
@@ -342,7 +165,7 @@ bike_data %>%
 
 ```
 
-Sometimes, we may want some little more information on our data. We can have a look at the `data` and`its structure` by using the [*glimpse()*](https://pillar.r-lib.org/reference/glimpse.html) function.
+Sometimes, we may want some little more information on our data. We can have a look at the `data` and `its structure` by using the [*glimpse()*](https://pillar.r-lib.org/reference/glimpse.html) function.
 
 ```{r glimpse, message=F, warning=F}
 # Take a quick glance at the data
@@ -1116,7 +939,7 @@ The `workflow` object provides quite an informative summary of the preprocessing
 boost_workflow <- boost_workflow %>% 
   fit(data = bike_train)
 
-#boost_workflow
+boost_workflow
 ```
 
 Now that we have our *fitted workflow*, how do we make some predictions🔮? `predict()` can be used on a workflow in the same way as on a model!
@@ -1208,7 +1031,8 @@ To do this, we'll create a grid! To tune our hyperparameters, we need a set of p
 # Create a grid of tuning parameters
 tree_grid <- grid_regular(tree_depth(),
                           # Use default ranges if you are not sure
-                          learn_rate(range = c(0.01, 0.3),trans = NULL), levels = 5)
+                          learn_rate(range = c(0.01, 0.3),trans = NULL),
+                          levels = 5)
 
 # Display some of the penalty values that will be used for tuning 
 tree_grid
@@ -1276,7 +1100,7 @@ tree_grid %>%
   scale_color_viridis_d(option = "plasma", begin = .9, end = 0)
 ```
 
-We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics (rmse, rsq) and across all candidate values of `learn_rate`. A tree depth of 4 and a learn_rate of 0.1 seems to do the trick! Let's investigate these tuning parameters further. We can use `show_best()` to display the top sub-models and their performance estimates.
+We can see that our "stubbiest" tree, with a depth of 1, is the worst model according to both metrics (rmse, rsq) and across all candidate values of `learn_rate`. A tree depth of 4 and a learn_rate of around 0.1 seems to do the trick! Let's investigate these tuning parameters further. We can use `show_best()` to display the top sub-models and their performance estimates.
 
 ```{r grid_show, exercise = F, exercise.eval = F,message=F,warning=F}
 tree_grid %>% 
@@ -1344,7 +1168,7 @@ Now, we can save this model to be used later.
 ```{r s_last_fit_wf, exercise = F, exercise.eval = F,message=F,warning=F}
 # Save trained workflow
 saveRDS(bike_boost_model, 'bike_boost_model.rds')
-# beepr::beep(9)
+
 ```
 
 Now, we can load it whenever we need it, and use it to predict labels for new data. This is often called *`scoring`* or *`inferencing`*.
